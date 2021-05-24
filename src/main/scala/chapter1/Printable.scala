@@ -25,7 +25,6 @@ object Printable {
 }
 
 object PrintableSyntax {
-
   implicit class PrintableOps[A](value: A) {
     def format(implicit valuePrintable: Printable[A]): String =
       valuePrintable.format(value)
