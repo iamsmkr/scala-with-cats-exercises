@@ -27,12 +27,30 @@ object DemoApp extends App {
   import cats._
   import cats.syntax.show._
 
-  val showCat = Show.show[Cat] { cat =>
-    val name = Show[String].show(cat.name)
-    val age = Show[Int].show(cat.age)
-    val color = cat.color.show
-    s"$name is a $age year-old $color cat."
-  }
+  implicit val showCat: Show[Cat] =
+    Show.show[Cat] { cat =>
+      val name = Show[String].show(cat.name)
+      val age = Show[Int].show(cat.age)
+      val color = cat.color.show
+      s"$name is a $age year-old $color cat."
+    }
 
   println(showCat.show(cat))
+  println(cat.show)
+
+  val cat1 = Cat("Garfield", 38, "orange and black")
+  val cat2 = Cat("Heathcliff", 33, "orange and black")
+
+  import cats.implicits._
+
+  implicit val eqCat: Eq[Cat] = Eq.instance[Cat] { (cat1, cat2) =>
+    (cat1.name === cat2.name) && (cat2.age === cat2.age) &&
+      (cat2.color === cat2.color)
+  }
+
+  println(cat1 === cat2)
+  println(cat1 =!= cat2)
+  println(Option(cat1) === Option.empty[Cat])
+  println(cat1.some =!= none[Cat])
+  println(cat1.some === cat2.some)
 }
