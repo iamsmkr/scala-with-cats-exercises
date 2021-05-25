@@ -21,5 +21,17 @@ object DemoApp extends App {
   Printable.print(cat)
 
   import chapter1.PrintableSyntax._
+
   cat.print
+
+  import cats._
+
+  val showCat = Show.show((cat: Cat) => {
+    val name = Show[String].show(cat.name)
+    val age = Show[Int].show(cat.age)
+    val color = Show[String].show(cat.color)
+    s"$name is a $age year-old $color cat."
+  })
+
+  println(showCat.show(cat))
 }
