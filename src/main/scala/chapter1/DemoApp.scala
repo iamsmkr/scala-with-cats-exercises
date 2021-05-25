@@ -25,13 +25,14 @@ object DemoApp extends App {
   cat.print
 
   import cats._
+  import cats.syntax.show._
 
-  val showCat = Show.show((cat: Cat) => {
+  val showCat = Show.show[Cat] { cat =>
     val name = Show[String].show(cat.name)
     val age = Show[Int].show(cat.age)
-    val color = Show[String].show(cat.color)
+    val color = cat.color.show
     s"$name is a $age year-old $color cat."
-  })
+  }
 
   println(showCat.show(cat))
 }
