@@ -4,6 +4,7 @@ object DemoApp extends App {
 
   final case class Cat(name: String, age: Int, color: String)
 
+  // value object could be implemented as implicit objects
   implicit object PrintableCat extends Printable[Cat] {
     override def format(cat: Cat): String = {
       import PrintableInstances._
@@ -20,6 +21,10 @@ object DemoApp extends App {
   implicitly[Printable[Cat]].format(cat)
 
   Printable.print(cat)
+
+  import PrintableCat._
+
+  cat.format
 
   import chapter1.PrintableSyntax._
 
