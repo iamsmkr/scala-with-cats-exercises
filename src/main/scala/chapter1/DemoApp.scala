@@ -38,6 +38,7 @@ object DemoApp extends App {
   println(showCat.show(cat))
   println(cat.show)
   println(implicitly[Show[Cat]].show(cat))
+  println(Show[Cat].show(cat))
 
   val cat1 = Cat("Garfield", 38, "orange and black")
   val cat2 = Cat("Heathcliff", 33, "orange and black")
