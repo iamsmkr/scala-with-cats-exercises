@@ -17,14 +17,17 @@ object PrintableInstances {
 }
 
 object Printable {
-  def format[A](value: A)(implicit valuePrintable: Printable[A]): String =
+  def format[A: Printable](value: A): String = {
+    val valuePrintable = implicitly[Printable[A]]
     valuePrintable.format(value)
+  }
 
-  def print[A](value: A)(implicit valuePrintable: Printable[A]): Unit =
+  def print[A: Printable](value: A)(implicit valuePrintable: Printable[A]): Unit =
     println(valuePrintable.format(value))
 }
 
 object PrintableSyntax {
+
   implicit class PrintableOps[A](value: A) {
     def format(implicit valuePrintable: Printable[A]): String =
       valuePrintable.format(value)
