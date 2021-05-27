@@ -22,13 +22,13 @@ object BooleanMonoids {
     new Monoid[Boolean] {
       override def empty: Boolean = false
 
-      override def combine(x: Boolean, y: Boolean): Boolean = (a && !b) || (!a && b)
+      override def combine(x: Boolean, y: Boolean): Boolean = (x && !y) || (!x && y)
     }
 
   implicit val booleanXnorMethod: Monoid[Boolean] =
     new Monoid[Boolean] {
       override def empty: Boolean = true
 
-      override def combine(x: Boolean, y: Boolean): Boolean = (!a || b) && (a || !b)
+      override def combine(x: Boolean, y: Boolean): Boolean = (!x || y) && (x || !y)
     }
 }
