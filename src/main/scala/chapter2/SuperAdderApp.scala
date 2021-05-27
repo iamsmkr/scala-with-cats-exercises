@@ -44,9 +44,9 @@ object SuperAdderApp extends App {
   /**
    * If we try to add a list consistng entirely of Some values, we get a compile error:
    *
-   * add21(List(Some(1), Some(2), Some(3)).contains(6))) results in compile error
+   * add(List(Some(1), Some(2), Some(3)).contains(6))) results in compile error
    * error: could not find implicit value for evidence parameter of type cats.Monoid[Some[Int]]
-   * add21(List(Some(1), Some(2), Some(3)))
+   * add(List(Some(1), Some(2), Some(3)))
    * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    *
    * This error occurs because of Cats decision of implementing type classes as invarients.
