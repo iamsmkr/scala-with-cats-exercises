@@ -65,6 +65,14 @@ object ContravariantFunctorApp extends App {
   val doublePrintable: Printable[Double] = ContravariantFunctor[Printable].contramap(integerPrintable)(func)
 
   println(doublePrintable.format(2.0))
+
+  implicit val stringPrintable: Printable[String] = value => s"'$value'"
+
+  final case class Box[A](value: A)
+
+  val boxPrintable: Printable[Box[String]] = ContravariantFunctor[Printable].contramap(stringPrintable)((x: Box[String]) => x.value)
+
+  println(boxPrintable.format(Box("helloworld")))
 }
 
 object InvariantFunctorApp extends App {
@@ -100,8 +108,15 @@ object InvariantFunctorApp extends App {
       override def decode(value: String): String = value
     }
 
-  val integerCodec: Codec[Int] = InvariantFunctor[Codec].imap[String, Int](stringCodec)(_.toInt)(_.toString)
+  val integerCodec: Codec[Int] = InvariantFunctor[Codec].imap(stringCodec)(_.toInt)(_.toString)
 
   println(integerCodec.encode(2))
   println(integerCodec.decode("5"))
+
+  final case class Box[T](value: T)
+
+  val boxCodec: Codec[Box[String]] = InvariantFunctor[Codec].imap(stringCodec)(Box(_))((x: Box[String]) => x.value)
+
+  println(boxCodec.encode(Box("helloworld")))
+  println(boxCodec.decode("helloworld"))
 }
