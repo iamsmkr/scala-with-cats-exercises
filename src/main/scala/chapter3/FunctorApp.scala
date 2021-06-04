@@ -119,4 +119,45 @@ object InvariantFunctorApp extends App {
 
   println(boxCodec.encode(Box("helloworld")))
   println(boxCodec.decode("helloworld"))
+
+  trait Monoid[T] {
+    def empty: T
+
+    def combine(x: T, y: T): T
+  }
+
+  // Since both the methods `empty` and `combine` in a Monoind are varying in both parameter as well as return type
+  // we have to provide transformations both from `A=>B` and `B=>A` to be able to convert a `F[A]` to `F[B]`.
+  // This, however, also means that we would be convert `F[B]` to `F[A]`.
+
+  implicit def monoidInvariantFunctor: InvariantFunctor[Monoid] =
+    new InvariantFunctor[Monoid] {
+      override def imap[A, B](fa: Monoid[A])(f: A => B)(g: B => A): Monoid[B] =
+        new Monoid[B] {
+          override def empty: B = f(fa.empty)
+
+          override def combine(x: B, y: B): B = f(fa.combine(g(x), g(y)))
+        }
+    }
+
+  implicit val stringMonoid: Monoid[String] =
+    new Monoid[String] {
+      override def empty: String = ""
+
+      override def combine(x: String, y: String): String = x + y
+    }
+
+  implicit def symbolMonoid(implicit m: Monoid[String]): Monoid[Symbol] = InvariantFunctor[Monoid].imap[String, Symbol](m)(Symbol.apply)(_.name)
+
+  println(symbolMonoid.empty)
+  println(symbolMonoid.combine(Symbol("A"), Symbol("B")))
+
+  // Although the implicit monoid `Monoid[Symbol]` in turns makes use of `stringMonoid` but the following implementation
+  // is enough to put the point across: that since both the methods `empty` and `combine` in a Monoind are varying in both
+  // parameter as well as return type, we can derive both `F[A]` from `F[B]` as well as `F[B]` from `F[A]`.
+
+  def stringMonoid2(implicit m: Monoid[Symbol]): Monoid[String] = InvariantFunctor[Monoid].imap[Symbol, String](m)(_.name)(Symbol.apply)
+
+  println(stringMonoid2.empty)
+  println(stringMonoid2.combine("X", "Y"))
 }
