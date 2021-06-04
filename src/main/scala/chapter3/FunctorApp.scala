@@ -126,7 +126,7 @@ object InvariantFunctorApp extends App {
     def combine(x: T, y: T): T
   }
 
-  // Since both the methods `empty` and `combine` in a Monoind are varying in both parameter as well as return type
+  // Since both the methods `empty` and `combine` in a Monoid are varying in both parameter as well as return type
   // we have to provide transformations both from `A=>B` and `B=>A` to be able to convert a `F[A]` to `F[B]`.
   // This, however, also means that we would be convert `F[B]` to `F[A]`.
 
@@ -153,7 +153,7 @@ object InvariantFunctorApp extends App {
   println(symbolMonoid.combine(Symbol("A"), Symbol("B")))
 
   // Although the implicit monoid `Monoid[Symbol]` in turns makes use of `stringMonoid` but the following implementation
-  // is enough to put the point across: that since both the methods `empty` and `combine` in a Monoind are varying in both
+  // is enough to put the point across: that since both the methods `empty` and `combine` in a Monoid are varying in both
   // parameter as well as return type, we can derive both `F[A]` from `F[B]` as well as `F[B]` from `F[A]`.
 
   def stringMonoid2(implicit m: Monoid[Symbol]): Monoid[String] = InvariantFunctor[Monoid].imap[Symbol, String](m)(_.name)(Symbol.apply)
