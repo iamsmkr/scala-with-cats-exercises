@@ -66,13 +66,13 @@ object ContravariantFunctorApp extends App {
 
   println(doublePrintable.format(2.0))
 
-  implicit val stringPrintable: Printable[String] = value => s"'$value'"
-
   final case class Box[A](value: A)
 
-  val boxPrintable: Printable[Box[String]] = ContravariantFunctor[Printable].contramap(stringPrintable)((x: Box[String]) => x.value)
+  def boxPrintable[A](implicit p: Printable[A]): Printable[Box[A]] = ContravariantFunctor[Printable].contramap[A, Box[A]](p)(_.value)
 
-  println(boxPrintable.format(Box("helloworld")))
+  implicit val stringPrintable: Printable[String] = value => s"'$value'"
+
+  println(boxPrintable[String].format(Box("helloworld")))
 }
 
 object InvariantFunctorApp extends App {
