@@ -108,10 +108,12 @@ object InvariantFunctorApp extends App {
       override def decode(value: String): String = value
     }
 
-  val integerCodec: Codec[Int] = InvariantFunctor[Codec].imap(stringCodec)(_.toInt)(_.toString)
+  implicit val integerCodec: Codec[Int] = InvariantFunctor[Codec].imap(stringCodec)(_.toInt)(_.toString)
 
   println(integerCodec.encode(2))
   println(integerCodec.decode("5"))
+
+  val stringCodec2: Codec[String] = InvariantFunctor[Codec].imap(integerCodec)(_.toString)(_.toInt)
 
   final case class Box[T](value: T)
 
@@ -128,7 +130,7 @@ object InvariantFunctorApp extends App {
 
   // Since both the methods `empty` and `combine` in a Monoid are varying in both parameter as well as return type
   // we have to provide transformations both from `A=>B` and `B=>A` to be able to convert a `F[A]` to `F[B]`.
-  // This, however, also means that we would be convert `F[B]` to `F[A]`.
+  // This also means that we would be convert `F[B]` to `F[A]`. However, this is possible to all invariant functors.
 
   implicit def monoidInvariantFunctor: InvariantFunctor[Monoid] =
     new InvariantFunctor[Monoid] {
@@ -151,10 +153,6 @@ object InvariantFunctorApp extends App {
 
   println(symbolMonoid.empty)
   println(symbolMonoid.combine(Symbol("A"), Symbol("B")))
-
-  // Although the implicit monoid `Monoid[Symbol]` in turns makes use of `stringMonoid` but the following implementation
-  // is enough to put the point across: that since both the methods `empty` and `combine` in a Monoid are varying in both
-  // parameter as well as return type, we can derive both `F[A]` from `F[B]` as well as `F[B]` from `F[A]`.
 
   def stringMonoid2(implicit m: Monoid[Symbol]): Monoid[String] = InvariantFunctor[Monoid].imap[Symbol, String](m)(_.name)(Symbol.apply)
 
