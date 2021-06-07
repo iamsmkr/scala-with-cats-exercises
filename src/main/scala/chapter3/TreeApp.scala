@@ -42,5 +42,5 @@ object TreeApp extends App {
   import cats.implicits.toFunctorOps
 
   val tree = branch(branch(leaf(1), leaf(2)), branch(leaf(3), branch(leaf(4), leaf(5))))
-  println(tree.map(_ * 2))
+  assert(tree.map(_ * 2) == Branch(Branch(Leaf(2), Leaf(4)), Branch(Leaf(6), Branch(Leaf(8), Leaf(10)))))
 }

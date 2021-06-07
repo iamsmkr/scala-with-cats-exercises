@@ -25,13 +25,13 @@ object FunctorApp extends App {
 
   val func3: MyFunc[Double] = Functor[MyFunc].map(func1)(func2)
 
-  println(func3(2)) // returns 2.0
+  assert(func3(2) == 2.0)
 
   import cats.syntax.functor._
 
   val func4: Function[Int, Double] = func1.map(func2)
 
-  println(func4(2)) // returns 2.0
+  assert(func4(2) == 2.0)
 }
 
 object ContravariantFunctorApp extends App {
@@ -58,13 +58,13 @@ object ContravariantFunctorApp extends App {
 
   implicit val integerPrintable: Printable[Int] = value => s"'$value'"
 
-  println(integerPrintable.format(2))
+  assert(integerPrintable.format(2) == "'2'")
 
   def func: Double => Int = _.toInt
 
   val doublePrintable: Printable[Double] = ContravariantFunctor[Printable].contramap(integerPrintable)(func)
 
-  println(doublePrintable.format(2.0))
+  assert(doublePrintable.format(2.0) == "'2'")
 
   final case class Box[A](value: A)
 
@@ -72,7 +72,7 @@ object ContravariantFunctorApp extends App {
 
   implicit val stringPrintable: Printable[String] = value => s"'$value'"
 
-  println(boxPrintable[String].format(Box("helloworld")))
+  assert(boxPrintable[String].format(Box("helloworld")) == "'helloworld'")
 }
 
 object InvariantFunctorApp extends App {
@@ -110,8 +110,8 @@ object InvariantFunctorApp extends App {
 
   implicit val integerCodec: Codec[Int] = InvariantFunctor[Codec].imap(stringCodec)(_.toInt)(_.toString)
 
-  println(integerCodec.encode(2))
-  println(integerCodec.decode("5"))
+  assert(integerCodec.encode(2) == "2")
+  assert(integerCodec.decode("5") == 5)
 
   val stringCodec2: Codec[String] = InvariantFunctor[Codec].imap(integerCodec)(_.toString)(_.toInt)
 
@@ -119,8 +119,8 @@ object InvariantFunctorApp extends App {
 
   val boxCodec: Codec[Box[String]] = InvariantFunctor[Codec].imap(stringCodec)(Box(_))((x: Box[String]) => x.value)
 
-  println(boxCodec.encode(Box("helloworld")))
-  println(boxCodec.decode("helloworld"))
+  assert(boxCodec.encode(Box("helloworld")) == "helloworld")
+  assert(boxCodec.decode("helloworld") == Box("helloworld"))
 
   trait Monoid[T] {
     def empty: T
@@ -151,11 +151,11 @@ object InvariantFunctorApp extends App {
 
   implicit def symbolMonoid(implicit m: Monoid[String]): Monoid[Symbol] = InvariantFunctor[Monoid].imap[String, Symbol](m)(Symbol.apply)(_.name)
 
-  println(symbolMonoid.empty)
-  println(symbolMonoid.combine(Symbol("A"), Symbol("B")))
+  assert(symbolMonoid.empty == Symbol(""))
+  assert(symbolMonoid.combine(Symbol("A"), Symbol("B")) == Symbol("AB"))
 
   def stringMonoid2(implicit m: Monoid[Symbol]): Monoid[String] = InvariantFunctor[Monoid].imap[Symbol, String](m)(_.name)(Symbol.apply)
 
-  println(stringMonoid2.empty)
-  println(stringMonoid2.combine("X", "Y"))
+  assert(stringMonoid2.empty == "")
+  assert(stringMonoid2.combine("X", "Y") == "XY")
 }

@@ -11,7 +11,7 @@ object MoneyApp extends App {
     Money(totalDollars, totalCents)
   }
 
-  println(addMoney(Money(500, 45), Money(330, 90)))
+  assert(addMoney(Money(500, 45), Money(330, 90)) == Money(831, 35))
 
   def addMoneyMap(balances: Map[String, Money], salaries: Map[String, Money]): Map[String, Money] = {
     balances.foldLeft(salaries) { case (acc, (emp, money)) =>
@@ -19,10 +19,10 @@ object MoneyApp extends App {
     }
   }
 
-  println(addMoneyMap(
+  assert(addMoneyMap(
     balances = Map("James" -> Money(212, 98), "Jimmy" -> Money(43, 44)),
     salaries = Map("Jimmy" -> Money(500, 44))
-  ))
+  ) == Map("Jimmy" -> Money(543, 88), "James" -> Money(212, 98)))
 
 }
 
@@ -49,12 +49,12 @@ object SemigroupMoneyApp extends App {
     }
   }
 
-  println(add(Money(500, 45), Money(330, 90)))
+  assert(add(Money(500, 45), Money(330, 90)) == Money(831, 35))
 
-  println(add(
+  assert(add(
     Map("James" -> Money(212, 98), "Jimmy" -> Money(43, 44)),
     Map("Jimmy" -> Money(500, 44))
-  ))
+  ) == Map("Jimmy" -> Money(543, 88), "James" -> Money(212, 98)))
 
 }
 
@@ -73,17 +73,17 @@ object CatsSemigroupMoneyApp extends App {
 
   def add[A: Semigroup](a1: A, a2: A): A = implicitly[Semigroup[A]].combine(a1, a2)
 
-  println(add(Money(500, 45), Money(330, 90)))
+  assert(add(Money(500, 45), Money(330, 90)) == Money(831, 35))
 
-  println(add(
+  assert(add(
     Map("James" -> Money(212, 98), "Jimmy" -> Money(43, 44)),
     Map("Jimmy" -> Money(500, 44))
-  ))
+  ) == Map("Jimmy" -> Money(543, 88), "James" -> Money(212, 98)))
 
   import cats.syntax.semigroup._
 
-  println(
+  assert((
     Map("James" -> Money(212, 98), "Jimmy" -> Money(43, 44))
       |+| Map("Jimmy" -> Money(500, 44))
-  )
+    ) == Map("Jimmy" -> Money(543, 88), "James" -> Money(212, 98)))
 }

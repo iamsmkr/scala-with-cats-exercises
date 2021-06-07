@@ -41,10 +41,10 @@ object DemoApp extends App {
       s"$name is a $age year-old $color cat."
     }
 
-  println(showCat.show(cat))
-  println(cat.show)
-  println(implicitly[Show[Cat]].show(cat))
-  println(Show[Cat].show(cat))
+  assert(showCat.show(cat) == "Molly is a 5 year-old Black cat.")
+  assert(cat.show == "Molly is a 5 year-old Black cat.")
+  assert(implicitly[Show[Cat]].show(cat) == "Molly is a 5 year-old Black cat.")
+  assert(Show[Cat].show(cat) == "Molly is a 5 year-old Black cat.")
 
   val cat1 = Cat("Garfield", 38, "orange and black")
   val cat2 = Cat("Heathcliff", 33, "orange and black")
@@ -56,9 +56,9 @@ object DemoApp extends App {
       (cat2.color === cat2.color)
   }
 
-  println(cat1 === cat2)
-  println(cat1 =!= cat2)
-  println(Option(cat1) === Option.empty[Cat])
-  println(cat1.some =!= none[Cat])
-  println(cat1.some === cat2.some)
+  assert(!(cat1 === cat2))
+  assert(cat1 =!= cat2)
+  assert(!(Option(cat1) === Option.empty[Cat]))
+  assert(cat1.some =!= none[Cat])
+  assert(!(cat1.some === cat2.some))
 }
