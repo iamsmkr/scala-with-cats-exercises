@@ -33,37 +33,34 @@ object TreeApp extends App {
   }
 
   import Tree._
+  import cats.syntax.functor._ // for map
+  import cats.syntax.flatMap._ // for flatMap
 
-  val tree1: Tree[Int] = branch(branch(leaf(1), leaf(2)), branch(leaf(3), branch(leaf(4), leaf(5))))
-  val tree2: Tree[Int] = Monad[Tree].map(tree1)(_ * 3)
+  val res1 = branch(leaf(100), leaf(200)).
+    flatMap(x => branch(leaf(x - 1), leaf(x + 1)))
 
-  assert(Monad[Tree].flatMap[Int, Int](tree1)(_ => tree2) ==
+  assert(res1 ==
+    Branch(
+      Branch(Leaf(99), Leaf(101)),
+      Branch(Leaf(199), Leaf(201))
+    )
+  )
+
+  val res2 = for {
+    a <- branch(leaf(100), leaf(200))
+    b <- branch(leaf(a - 10), leaf(a + 10))
+    c <- branch(leaf(b - 1), leaf(b + 1))
+  } yield c
+
+  assert(res2 ==
     Branch(
       Branch(
-        Branch(
-          Branch(Leaf(3), Leaf(6)),
-          Branch(Leaf(9), Branch(Leaf(12), Leaf(15)))
-        ),
-        Branch(
-          Branch(Leaf(3), Leaf(6)),
-          Branch(Leaf(9), Branch(Leaf(12), Leaf(15)))
-        )
+        Branch(Leaf(89), Leaf(91)),
+        Branch(Leaf(109), Leaf(111))
       ),
       Branch(
-        Branch(
-          Branch(Leaf(3), Leaf(6)),
-          Branch(Leaf(9), Branch(Leaf(12), Leaf(15)))
-        ),
-        Branch(
-          Branch(
-            Branch(Leaf(3), Leaf(6)),
-            Branch(Leaf(9), Branch(Leaf(12), Leaf(15)))
-          ),
-          Branch(
-            Branch(Leaf(3), Leaf(6)),
-            Branch(Leaf(9), Branch(Leaf(12), Leaf(15)))
-          )
-        )
+        Branch(Leaf(189), Leaf(191)),
+        Branch(Leaf(209), Leaf(211))
       )
     )
   )
